@@ -1,0 +1,106 @@
+---
+title: "Differential Analysis with PolII counts
+
+---
+
+```{r}
+#Load libraries
+library(EnhancedVolcano)
+library (tidyverse)
+library (DESeq2)
+library(tximport)
+library(ggplot2)
+library(ggpubr)
+library(apeglm)
+
+#Load counts file
+Counts_tbl <- read.csv (".....", header = TRUE) %>%
+  as_tibble() 
+
+Counts_tbl <- na.omit (Counts_tbl)
+any (is.na (Counts_tbl))
+
+#Convert to matrix 
+Counts_matrix <- Counts_tbl[, 2:28] %>%      
+  as.matrix()                                 
+
+#Assign gene names to rownames of the matrix
+rownames(Counts_matrix) <- Counts_tbl$gene_id 
+any(is.na (Counts_matrix))
+Counts_matrix
+
+#Import exp design table
+expdesigntable <- read.csv (".....", header = TRUE) %>%
+  as_tibble()
+
+#Prepare and run differential analysis
+data_for_deseq <- DESeqDataSetFromMatrix (countData = Counts_matrix,   
+                                         colData = expdesigntable,    
+                                         design = ~Combined)   
+
+diff_exp_analysis <- DESeq(data_for_deseq)      
+diff_exp_analysis 
+
+diff_exp_results <- results(diff_exp_analysis, contrast=c("Combined", "Condition1", "Condition2"))
+diff_exp_results
+
+#Export results as csv
+write.csv (diff_exp_results, file = ".....")
+
+
+#Log fold change shrinkage
+diff_exp_results_shrink <-lfcShrink(diff_exp_analysis,   #dataset for shrinkage
+                                    coef = 2,            #set log scale coef to 2
+                                    type = "apeglm")     #set package to apeglm - provides coefficients on log scale
+
+diff_exp_results_shrink
+
+#Make volcano plot
+keyvals <- ifelse(
+   diff_exp_results_shrink$log2FoldChange < -0.58 & diff_exp_results_shrink$padj < 0.05 , 'darkgreen',
+      ifelse(diff_exp_results_shrink$log2FoldChange > 0.58 & diff_exp_results_shrink$padj < 0.05, 'royalblue',
+        'black'))
+  keyvals[is.na(keyvals)] <- 'black'
+  names(keyvals)[keyvals == 'darkgreen'] <- 'Condition2'
+  names(keyvals)[keyvals == 'royalblue'] <- 'Condition1'
+  names(keyvals)[keyvals == 'black'] <- 'nonsig'
+
+volcano <- EnhancedVolcano(diff_exp_results_shrink, x = 'log2FoldChange', y = 'padj',
+                           lab = rownames(diff_exp_results_shrink),
+                         selectLab = rownames(diff_exp_results_shrink)[which(names(keyvals) %in% c('Condition1', 'Condition2'))],
+                         title = "....",
+                         ylab = bquote(~-log[10]~ 'p value'),
+                         xlab = bquote(log[2]~ 'fold change'),
+                         labFace = 'bold', 
+                         colCustom = keyvals,
+                         subtitle = bquote(italic('FDR < 0.05 and absolute FC >= 1.5')),
+                         labSize = 0, pointSize = 1.5, axisLabSize=11, titleLabSize=12,
+                         subtitleLabSize=10, captionLabSize=12,
+                         legendPosition = "right",
+                         legendLabSize = 12,
+                         ylim = c(-0.5, 10),
+                         xlim = c (-3,3),
+                         legendIconSize = 3.0,
+                        gridlines.major = FALSE,
+                        gridlines.minor = FALSE,
+                        border = 'partial',
+                        borderWidth = 1.5,
+                        borderColour = 'black',
+                         # Set cutoffs
+                         pCutoff = 0.05, FCcutoff = 0.58) 
+
+newvolcano <- volcano +
+    ggplot2::coord_cartesian(xlim=c(-3, 3)) +
+    ggplot2::scale_x_continuous(
+      breaks=seq(-3,3, 1)) +
+  ggplot2 :: theme(axis.title= element_text(face="bold"))+
+  ggplot2:: theme(axis.text.y = element_text(face="bold")) +
+  ggplot2:: theme(axis.text.x = element_text(face="bold"))                 
+
+#Save plot
+ggsave (plot = newvolcano, filename = "......png", height = 4, width = 6, dpi = 300)
+```
+
+
+
+

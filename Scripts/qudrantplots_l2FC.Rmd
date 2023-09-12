@@ -1,0 +1,46 @@
+---
+title: "quadrantplots_l2FC"
+
+---
+
+```{r}
+
+library("stringr") 
+library (tidyverse)
+library (ggplot2)
+library(ggpubr)
+library(gridExtra)
+library (scales)
+library(readxl)
+
+#Read data
+data <- read_xlsx("....xlsx", sheet = "Sheet1_noNA")
+head(data)
+
+data%>%
+  na.omit()
+
+#Generate quadrant plot
+keyvals <- ifelse (data$log2FoldChange < -0.58,  'red', 
+      ifelse(data$log2FoldChange > 0.58,  'blue',
+       'black'))
+  
+scatter_pol2vsExp <- ggplot (data, aes(x=l2FC1, y=l2FC2)) +
+  geom_point(alpha =0.5, color = keyvals) +
+  geom_hline(yintercept=0, linetype = "dashed") +
+  geom_vline(xintercept=0.5, linetype = "dashed", color = "purple") +
+  geom_vline(xintercept=-0.5, linetype = "dashed", color = "purple") +
+  geom_hline(yintercept=0.5, linetype = "dashed", color = "purple") +
+  geom_hline(yintercept=-0.5, linetype = "dashed", color = "purple") +
+  geom_vline(xintercept=0, linetype = "dashed") +
+  theme_bw() +
+  ylim (-3, 3) +
+  xlim (-3, 3) +
+  labs(x =".....", y= ".....",    color = "Legend") +
+  scale_colour_manual(values = c("#FF0000", "#0000FF"))
+
+#Save plot
+ggsave(plot=withline, filename="......tiff", height = 4, width = 6, dpi=300)
+
+```
+
