@@ -1,0 +1,39 @@
+
+```{r}
+library (Sushi)
+
+arc <- read.table("......mango.bedpe", header=TRUE)
+head (arc)
+
+#ApoB
+chrom = "chr12"
+chromstart = 7909564
+chromend = 8070101
+
+#Dmbt1
+chrom = "chr7"
+chromstart = 138131586
+chromend = 138333519
+
+#Run Plot and test
+plotBedpe(arc, chrom, chromstart, chromend, heights = arc$score, plottype="loops",colorby =arc$samplenumber, colorbycol = SushiColors(2), ymax=1.2)
+labelgenome(chrom, chromstart,chromend, side=1, n=3, scale="Mb")
+axis(side=2,las=2,tcl=0.2)
+mtext("Z-score",side=2,line=2.2,cex=1,font=2)
+legend ("topright", inset =0.01, legend = c("condition1", "condition2"), col = SushiColors(2)(2),  pch =19, bty='n', text.font =2)
+
+#Save plot
+tiff(".....tiff", width = 8 , height = 3, units = 'in', res = 300)
+par(mar=c(1, 4, 1, 1) + 0.1, oma = c(4,0,0,0) + 0.1)
+
+plot <- plotBedpe(arc,chrom,chromstart,chromend, heights = arc$score, plottype="loops",colorby =arc$samplenumber, colorbycol = SushiColors(2), ymax = 1.2)
+labelgenome(chrom, chromstart,chromend, side=1, n=3, scale="Mb")
+axis(side=2,las=2,tcl=0.2)
+mtext("Z-score",side=2,line=2.2,cex=1,font=2)
+legend ("topright", inset =0.01, legend = c("Villus", "Crypt"), col = SushiColors(2)(2),  pch =19, bty='n', text.font =2)
+
+dev.off()
+
+
+```
+
