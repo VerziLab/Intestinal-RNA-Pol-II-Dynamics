@@ -1,6 +1,6 @@
 # Intestinal-RNA-Pol-II-Dynamics
 
-This repository provides code used in the analysis from PAPER??. Scripts include those used for partitoning read counts, for metagene analysis, differential analysis and other miscellaneous analysis. 
+This repository provides code used in the analysis from Dynamic RNA Polymerase II Recruitment Drives Differentiation of the Intestine under the direction of HNF4. Scripts include those used for partitoning read counts, for metagene analysis, differential analysis and other miscellaneous analysis. 
 
 ## Project Outline
 - [Scripts](./Scripts) - Scripts generated during the course of this project
