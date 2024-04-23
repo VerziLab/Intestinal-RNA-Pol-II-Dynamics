@@ -1,5 +1,7 @@
 # Intestinal-RNA-Pol-II-Dynamics
 
+<a href="https://zenodo.org/doi/10.5281/zenodo.11051159"><img src="https://zenodo.org/badge/690103833.svg" alt="DOI"></a>
+
 This repository provides code used in the analysis from Dynamic RNA Polymerase II Recruitment Drives Differentiation of the Intestine under the direction of HNF4. Scripts include those used for partitoning read counts, for metagene analysis, differential analysis and other miscellaneous analysis. 
 
 ## Project Outline
